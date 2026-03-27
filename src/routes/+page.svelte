@@ -8,6 +8,40 @@
 	let outputLang = 'glagolitic';
 	let isConverting = false;
 	let charCount = 0;
+	let isLoading = true;
+
+	// Dark mode detection for macOS
+	onMount(() => {
+		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+		function updateTheme(e) {
+			if (e.matches) {
+				document.body.classList.add('dark-mode');
+			} else {
+				document.body.classList.remove('dark-mode');
+			}
+		}
+
+		// Initial check
+		updateTheme(mediaQuery);
+
+		// Listen for changes
+		mediaQuery.addEventListener('change', updateTheme);
+
+		return () => {
+			mediaQuery.removeEventListener('change', updateTheme);
+		};
+	});
+
+	// Loading state
+	onMount(() => {
+		// Simulate initial loading
+		const timer = setTimeout(() => {
+			isLoading = false;
+		}, 300);
+
+		return () => clearTimeout(timer);
+	});
 
 	// Swap languages
 	function swapLanguages() {
@@ -100,6 +134,11 @@
 	<title>Glagolitic Converter</title>
 </svelte:head>
 
+{#if isLoading}
+	<div class="loading-screen">
+		<div class="loading-icon">Ⰳ</div>
+	</div>
+{:else}
 <div class="container">
 	<!-- Header with glass effect -->
 	<header class="header">
@@ -178,6 +217,7 @@
 		</div>
 	</footer>
 </div>
+{/if}
 
 <style>
 	:global(*) {
@@ -188,9 +228,51 @@
 
 	:global(body) {
 		font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+		background: #ffffff;
+		color: #000000;
 		min-height: 100vh;
 		overflow: hidden;
+	}
+
+	:global(body.dark-mode) {
+		background: #1e1e1e;
+		color: #ffffff;
+	}
+
+	/* Loading Screen */
+	.loading-screen {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100vh;
+		width: 100vw;
+		background: #ffffff;
+	}
+
+	:global(body.dark-mode) .loading-screen {
+		background: #1e1e1e;
+	}
+
+	.loading-icon {
+		font-size: 72px;
+		font-weight: 700;
+		color: #000000;
+		animation: pulse 1.5s ease-in-out infinite;
+	}
+
+	:global(body.dark-mode) .loading-icon {
+		color: #ffffff;
+	}
+
+	@keyframes pulse {
+		0%, 100% {
+			opacity: 0.3;
+			transform: scale(0.9);
+		}
+		50% {
+			opacity: 1;
+			transform: scale(1.1);
+		}
 	}
 
 	.container {
@@ -201,17 +283,10 @@
 		gap: 16px;
 	}
 
-	/* Liquid Glass Header */
+	/* Header */
 	.header {
-		background: rgba(255, 255, 255, 0.15);
-		backdrop-filter: blur(20px) saturate(180%);
-		-webkit-backdrop-filter: blur(20px) saturate(180%);
+		background: transparent;
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		box-shadow: 
-			0 8px 32px rgba(0, 0, 0, 0.1),
-			inset 0 1px 0 rgba(255, 255, 255, 0.3),
-			inset 0 -1px 0 rgba(255, 255, 255, 0.1);
 		padding: 16px 24px;
 	}
 
@@ -230,17 +305,22 @@
 	.glagolitic-title {
 		font-size: 24px;
 		font-weight: 700;
-		background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
+		color: #000000;
 		letter-spacing: 2px;
 	}
 
 	.latin-title {
 		font-size: 14px;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.8);
+		color: rgba(0, 0, 0, 0.6);
+	}
+
+	:global(body.dark-mode) .glagolitic-title {
+		color: #ffffff;
+	}
+
+	:global(body.dark-mode) .latin-title {
+		color: rgba(255, 255, 255, 0.6);
 	}
 
 	.header-actions {
@@ -249,12 +329,12 @@
 	}
 
 	.icon-btn {
-		background: rgba(255, 255, 255, 0.1);
-		border: 1px solid rgba(255, 255, 255, 0.2);
+		background: transparent;
+		border: 1px solid rgba(0, 0, 0, 0.15);
 		border-radius: 10px;
 		padding: 8px;
 		cursor: pointer;
-		color: white;
+		color: #000000;
 		transition: all 0.2s ease;
 		display: flex;
 		align-items: center;
@@ -262,12 +342,21 @@
 	}
 
 	.icon-btn:hover {
-		background: rgba(255, 255, 255, 0.2);
+		background: rgba(0, 0, 0, 0.05);
 		transform: scale(1.05);
 	}
 
 	.icon-btn:active {
 		transform: scale(0.95);
+	}
+
+	:global(body.dark-mode) .icon-btn {
+		border-color: rgba(255, 255, 255, 0.15);
+		color: #ffffff;
+	}
+
+	:global(body.dark-mode) .icon-btn:hover {
+		background: rgba(255, 255, 255, 0.1);
 	}
 
 	/* Converter Panels */
@@ -282,15 +371,14 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		background: rgba(255, 255, 255, 0.1);
-		backdrop-filter: blur(20px) saturate(180%);
-		-webkit-backdrop-filter: blur(20px) saturate(180%);
+		background: transparent;
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.15);
-		box-shadow: 
-			0 8px 32px rgba(0, 0, 0, 0.1),
-			inset 0 1px 0 rgba(255, 255, 255, 0.2);
+		border: 1px solid rgba(0, 0, 0, 0.1);
 		overflow: hidden;
+	}
+
+	:global(body.dark-mode) .panel {
+		border-color: rgba(255, 255, 255, 0.1);
 	}
 
 	.panel-header {
@@ -298,16 +386,21 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 12px 16px;
-		background: rgba(255, 255, 255, 0.05);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		background: rgba(0, 0, 0, 0.02);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+	}
+
+	:global(body.dark-mode) .panel-header {
+		background: rgba(255, 255, 255, 0.03);
+		border-bottom-color: rgba(255, 255, 255, 0.08);
 	}
 
 	.lang-select {
-		background: rgba(255, 255, 255, 0.1);
-		border: 1px solid rgba(255, 255, 255, 0.2);
+		background: transparent;
+		border: 1px solid rgba(0, 0, 0, 0.15);
 		border-radius: 8px;
 		padding: 8px 12px;
-		color: white;
+		color: #000000;
 		font-size: 14px;
 		font-weight: 500;
 		cursor: pointer;
@@ -316,26 +409,44 @@
 	}
 
 	.lang-select:hover {
-		background: rgba(255, 255, 255, 0.15);
+		background: rgba(0, 0, 0, 0.03);
+	}
+
+	:global(body.dark-mode) .lang-select {
+		border-color: rgba(255, 255, 255, 0.15);
+		color: #ffffff;
+	}
+
+	:global(body.dark-mode) .lang-select:hover {
+		background: rgba(255, 255, 255, 0.05);
 	}
 
 	.lang-select option {
-		background: #1a1a2e;
-		color: white;
+		background: #ffffff;
+		color: #000000;
+	}
+
+	:global(body.dark-mode) .lang-select option {
+		background: #2c2c2c;
+		color: #ffffff;
 	}
 
 	.char-count {
 		font-size: 12px;
-		color: rgba(255, 255, 255, 0.6);
+		color: rgba(0, 0, 0, 0.5);
 		font-weight: 500;
 	}
 
+	:global(body.dark-mode) .char-count {
+		color: rgba(255, 255, 255, 0.5);
+	}
+
 	.copy-btn {
-		background: rgba(255, 255, 255, 0.15);
-		border: 1px solid rgba(255, 255, 255, 0.2);
+		background: transparent;
+		border: 1px solid rgba(0, 0, 0, 0.15);
 		border-radius: 8px;
 		padding: 6px 12px;
-		color: white;
+		color: #000000;
 		font-size: 13px;
 		font-weight: 500;
 		cursor: pointer;
@@ -346,11 +457,20 @@
 	}
 
 	.copy-btn:hover {
-		background: rgba(255, 255, 255, 0.25);
+		background: rgba(0, 0, 0, 0.05);
 	}
 
 	.copy-btn:active {
 		transform: scale(0.98);
+	}
+
+	:global(body.dark-mode) .copy-btn {
+		border-color: rgba(255, 255, 255, 0.15);
+		color: #ffffff;
+	}
+
+	:global(body.dark-mode) .copy-btn:hover {
+		background: rgba(255, 255, 255, 0.1);
 	}
 
 	textarea {
@@ -358,7 +478,7 @@
 		background: transparent;
 		border: none;
 		padding: 20px;
-		color: white;
+		color: #000000;
 		font-size: 18px;
 		line-height: 1.6;
 		resize: none;
@@ -367,21 +487,29 @@
 	}
 
 	textarea::placeholder {
-		color: rgba(255, 255, 255, 0.4);
+		color: rgba(0, 0, 0, 0.3);
+	}
+
+	:global(body.dark-mode) textarea {
+		color: #ffffff;
+	}
+
+	:global(body.dark-mode) textarea::placeholder {
+		color: rgba(255, 255, 255, 0.3);
 	}
 
 	textarea#output {
-		color: rgba(255, 255, 255, 0.9);
-		background: rgba(0, 0, 0, 0.05);
+		background: rgba(0, 0, 0, 0.02);
+	}
+
+	:global(body.dark-mode) textarea#output {
+		background: rgba(255, 255, 255, 0.03);
 	}
 
 	/* Footer */
 	.footer {
-		background: rgba(255, 255, 255, 0.1);
-		backdrop-filter: blur(20px) saturate(180%);
-		-webkit-backdrop-filter: blur(20px) saturate(180%);
+		background: transparent;
 		border-radius: 12px;
-		border: 1px solid rgba(255, 255, 255, 0.15);
 		padding: 12px 20px;
 	}
 
@@ -396,18 +524,28 @@
 		align-items: center;
 		gap: 8px;
 		font-size: 12px;
-		color: rgba(255, 255, 255, 0.7);
+		color: rgba(0, 0, 0, 0.5);
+	}
+
+	:global(body.dark-mode) .shortcut {
+		color: rgba(255, 255, 255, 0.5);
 	}
 
 	kbd {
-		background: rgba(255, 255, 255, 0.15);
-		border: 1px solid rgba(255, 255, 255, 0.2);
+		background: rgba(0, 0, 0, 0.05);
+		border: 1px solid rgba(0, 0, 0, 0.1);
 		border-radius: 6px;
 		padding: 4px 8px;
 		font-size: 11px;
 		font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-		color: white;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		color: #000000;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	}
+
+	:global(body.dark-mode) kbd {
+		background: rgba(255, 255, 255, 0.08);
+		border-color: rgba(255, 255, 255, 0.1);
+		color: #ffffff;
 	}
 
 	/* Responsive */

@@ -6,6 +6,7 @@ src-tauri/target/
 build/
 dist/
 **/target/
+.svelte-kit
 
 # IDE
 .idea/

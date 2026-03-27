@@ -1,3 +1,5 @@
 create a converter between latin and glagolitic script in tauri+svelte combination, native keybindings, and with ci/cd and build output for macos (intel), macos (apple silicon), windows and linux, utilize an interface similar to google translate, but make it look like native macos with liquid glass efect
 
 remove color from the background gradient, make the background completely white and text black when macos light mode is on, and background dark (flush with macos) with white text when macos dark mode is on
+
+add pulsating icon when app is loading
