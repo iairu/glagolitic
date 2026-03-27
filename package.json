@@ -1,0 +1,38 @@
+{
+  "name": "glagolitic-app",
+  "version": "1.0.0",
+  "description": "A beautiful converter between Latin and Glagolitic scripts",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "tauri:build:macos-universal": "tauri build --target universal-apple-darwin",
+    "tauri:build:macos-intel": "tauri build --target x86_64-apple-darwin",
+    "tauri:build:macos-silicon": "tauri build --target aarch64-apple-darwin",
+    "tauri:build:windows": "tauri build --target x86_64-pc-windows-msvc",
+    "tauri:build:linux": "tauri build --target x86_64-unknown-linux-gnu",
+    "icons:generate": "node generate-icons.js",
+    "build:macos-intel": "./build-all.sh --macos-intel",
+    "build:macos-silicon": "./build-all.sh --macos-silicon",
+    "build:windows": "./build-all.bat",
+    "build:linux": "./build-all.sh --linux"
+  },
+  "keywords": ["glagolitic", "converter", "latin", "script", "tauri", "svelte"],
+  "author": "Glagolitic Team",
+  "license": "MIT",
+  "dependencies": {
+    "@sveltejs/adapter-static": "^3.0.0",
+    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "@tauri-apps/api": "^2.0.0",
+    "svelte": "^5.0.0",
+    "vite": "^6.0.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0"
+  }
+}
