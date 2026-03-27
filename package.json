@@ -21,7 +21,14 @@
     "build:windows": "./build-all.bat",
     "build:linux": "./build-all.sh --linux"
   },
-  "keywords": ["glagolitic", "converter", "latin", "script", "tauri", "svelte"],
+  "keywords": [
+    "glagolitic",
+    "converter",
+    "latin",
+    "script",
+    "tauri",
+    "svelte"
+  ],
   "author": "Glagolitic Team",
   "license": "MIT",
   "dependencies": {
@@ -29,10 +36,12 @@
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "@tauri-apps/api": "^2.0.0",
+    "pngjs": "^7.0.0",
     "svelte": "^5.0.0",
     "vite": "^6.0.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.0.0"
+    "@tauri-apps/cli": "^2.0.0",
+    "esbuild": "^0.27.4"
   }
 }

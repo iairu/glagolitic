@@ -1,7 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
 	import { latinToGlagolitic, glagoliticToLatin } from '$lib/converter.js';
-	import { listen } from '@tauri-apps/api/event';
 
 	let inputText = '';
 	let outputText = '';
@@ -32,13 +31,8 @@
 
 	// Copy output to clipboard
 	async function copyOutput() {
-		try {
-			const { writeText } = await import('@tauri-apps/api/clipboard');
-			await writeText(outputText);
-		} catch (err) {
-			// Fallback to navigator.clipboard
-			await navigator.clipboard.writeText(outputText);
-		}
+		// Use navigator.clipboard (works in both web and Tauri)
+		await navigator.clipboard.writeText(outputText);
 	}
 
 	// Update character count
@@ -66,29 +60,6 @@
 	function handleInput() {
 		convertText();
 	}
-
-	// Listen for keyboard shortcuts from Tauri
-	onMount(async () => {
-		try {
-			await listen('convert-shortcut', () => {
-				convertText();
-			});
-			
-			await listen('swap-shortcut', () => {
-				swapLanguages();
-			});
-			
-			await listen('clear-shortcut', () => {
-				clearAll();
-			});
-			
-			await listen('copy-shortcut', () => {
-				copyOutput();
-			});
-		} catch (err) {
-			console.log('Event listener not available');
-		}
-	});
 
 	// Handle keyboard shortcuts directly
 	function handleKeydown(event) {
@@ -163,10 +134,10 @@
 				</select>
 				<span class="char-count">{charCount} chars</span>
 			</div>
-			<textarea 
+			<textarea
 				id="input"
-				bind:value={inputText} 
-				on:input={handleInput}
+				bind:value={inputText}
+				oninput={handleInput}
 				placeholder="Type or paste text here..."
 				autocomplete="off"
 				spellcheck="false"
