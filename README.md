@@ -1,6 +1,6 @@
 # ⰃⰎⰀⰃⰑⰎⰋⰕⰋⰜⰀ - Glagolitic Converter
 
-A beautiful, native desktop application for converting text between Latin and Glagolitic scripts. Built with Tauri 2.0 and SvelteKit, featuring a modern liquid glass macOS-style interface.
+A beautiful, native desktop application for converting text between Latin, Glagolitic, and Syriac (Aramaic) scripts. Built with Tauri 2.0 and SvelteKit, featuring a clean interface that adapts to macOS light and dark mode.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)
@@ -9,12 +9,14 @@ A beautiful, native desktop application for converting text between Latin and Gl
 
 ## ✨ Features
 
-- 🔄 **Real-time Conversion** - Instant conversion between Latin and Glagolitic scripts
+- 🔄 **Multi-Script Support** - Convert between Latin, Glagolitic, and Syriac (Aramaic) scripts
 - ⌨️ **Native Keybindings** - Keyboard shortcuts for power users
-- 🎨 **Liquid Glass UI** - Beautiful macOS-style interface with glassmorphism effects
+- 🎨 **Clean UI** - Minimal interface that adapts to macOS light/dark mode
 - 🌐 **Cross-Platform** - Native builds for macOS (Intel & Apple Silicon), Windows, and Linux
 - 📋 **Quick Copy** - One-click copy of converted text
 - 🔄 **Swap Languages** - Easily switch between input/output languages
+- 🔍 **Accessibility Zoom** - Adjustable text size with keyboard shortcuts
+- 🌙 **Dark Mode** - Automatic switching based on system preference
 
 ## ⌨️ Keyboard Shortcuts
 
@@ -24,6 +26,9 @@ A beautiful, native desktop application for converting text between Latin and Gl
 | `⌘⇧X` / `Ctrl+Shift+X` | Swap languages |
 | `⌘⌫` / `Ctrl+Backspace` | Clear all text |
 | `⌘C` / `Ctrl+C` | Copy output (when output focused) |
+| `⌘+` / `Ctrl++` | Zoom in (increase text size) |
+| `⌘-` / `Ctrl+-` | Zoom out (decrease text size) |
+| `⌘0` / `Ctrl+0` | Reset zoom to default |
 
 ## 🚀 Installation
 
@@ -141,12 +146,13 @@ glagolitic-app/
 
 ## 🎨 Design
 
-The application features a **liquid glass** design inspired by macOS Big Sur and later:
+The application features a **clean, minimal** design that adapts to your system appearance:
 
-- **Glassmorphism** - Translucent panels with backdrop blur
-- **Vibrant Gradients** - Purple-pink gradient background
+- **Light Mode** - Pure white background with black text
+- **Dark Mode** - Dark background (#1e1e1e) matching macOS with white text
 - **Native Feel** - System-like appearance and keybindings
 - **Responsive** - Adapts to different window sizes
+- **Accessible** - Adjustable text size from 12px to 32px
 
 ## 🔄 Glagolitic Script Support
 

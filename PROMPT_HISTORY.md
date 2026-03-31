@@ -3,3 +3,13 @@ create a converter between latin and glagolitic script in tauri+svelte combinati
 remove color from the background gradient, make the background completely white and text black when macos light mode is on, and background dark (flush with macos) with white text when macos dark mode is on
 
 add pulsating icon when app is loading
+
+---
+
+add accessibility button support for text enlarging and making small, make the zoom in and zoom out keybinds act as these accessibility buttons
+
+add support for simple syriac script (arameic)
+
+update README
+
+---

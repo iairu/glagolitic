@@ -37,6 +37,33 @@ const glagoliticToLatinMap = {
 	'ⱏ': 'y', 'ⱡ': 'ě', 'ⱦ': 'ę', 'Ⱬ': 'ū', 'ⱬ': 'ŏ'
 };
 
+// Simple Syriac (Aramaic) mapping - based on phonetic correspondence
+const latinToSyriacMap = {
+	// Uppercase
+	'A': 'ܐ', 'B': 'ܒ', 'V': 'ܘ', 'G': 'ܓ', 'D': 'ܕ',
+	'E': 'ܐ', 'H': 'ܗ', 'Z': 'ܙ', 'K': 'ܟ', 'L': 'ܠ',
+	'M': 'ܡ', 'N': 'ܢ', 'S': 'ܣ', 'O': 'ܘ', 'P': 'ܦ',
+	'Q': 'ܩ', 'R': 'ܪ', 'SH': 'ܫ', 'T': 'ܛ', 'W': 'ܘ',
+	'Y': 'ܝ', 'CH': 'ܚ', 'F': 'ܦ', 'X': 'ܟ', 'J': 'ܓ',
+	// Lowercase
+	'a': 'ܐ', 'b': 'ܒ', 'v': 'ܘ', 'g': 'ܓ', 'd': 'ܕ',
+	'e': 'ܐ', 'h': 'ܗ', 'z': 'ܙ', 'k': 'ܟ', 'l': 'ܠ',
+	'm': 'ܡ', 'n': 'ܢ', 's': 'ܣ', 'o': 'ܘ', 'p': 'ܦ',
+	'q': 'ܩ', 'r': 'ܪ', 'sh': 'ܫ', 't': 'ܛ', 'w': 'ܘ',
+	'y': 'ܝ', 'ch': 'ܚ', 'f': 'ܦ', 'x': 'ܟ', 'j': 'ܓ',
+	// Special characters
+	'\'': '\'', ' ': ' '
+};
+
+const syriacToLatinMap = {
+	// Basic Syriac letters
+	'ܐ': 'A', 'ܒ': 'B', 'ܓ': 'G', 'ܕ': 'D', 'ܗ': 'H',
+	'ܘ': 'W', 'ܙ': 'Z', 'ܚ': 'CH', 'ܛ': 'T', 'ܝ': 'Y',
+	'ܟ': 'K', 'ܠ': 'L', 'ܡ': 'M', 'ܢ': 'N', 'ܣ': 'S',
+	'ܦ': 'P', 'ܨ': 'TS', 'ܩ': 'Q', 'ܪ': 'R', 'ܫ': 'SH',
+	'ܬ': 'TH', '': ' '
+};
+
 /**
  * Convert Latin text to Glagolitic
  * @param {string} text - Latin text to convert
@@ -66,10 +93,59 @@ export function glagoliticToLatin(text) {
  */
 export function autoConvert(text) {
 	const glagoliticPattern = /[\u2C00-\u2C5F]/;
-	
+
 	if (glagoliticPattern.test(text)) {
 		return glagoliticToLatin(text);
 	}
-	
+
 	return latinToGlagolitic(text);
+}
+
+/**
+ * Convert Latin text to Syriac
+ * @param {string} text - Latin text to convert
+ * @returns {string} - Syriac text
+ */
+export function latinToSyriac(text) {
+	// Handle digraphs first (SH, CH, TH, TS)
+	let result = text;
+	result = result.replace(/SH/g, 'ܫ').replace(/sh/g, 'ܫ');
+	result = result.replace(/CH/g, 'ܚ').replace(/ch/g, 'ܚ');
+	result = result.replace(/TH/g, 'ܬ').replace(/th/g, 'ܬ');
+	result = result.replace(/TS/g, 'ܨ').replace(/ts/g, 'ܨ');
+	
+	return result.split('').map(char => {
+		return latinToSyriacMap[char] || char;
+	}).join('');
+}
+
+/**
+ * Convert Syriac text to Latin
+ * @param {string} text - Syriac text to convert
+ * @returns {string} - Latin text
+ */
+export function syriacToLatin(text) {
+	return text.split('').map(char => {
+		return syriacToLatinMap[char] || char;
+	}).join('');
+}
+
+/**
+ * Detect script type
+ * @param {string} text - Text to detect
+ * @returns {string} - 'latin', 'glagolitic', 'syriac', or 'unknown'
+ */
+export function detectScript(text) {
+	const glagoliticPattern = /[\u2C00-\u2C5F]/;
+	const syriacPattern = /[\u0700-\u074F]/;
+	
+	if (syriacPattern.test(text)) {
+		return 'syriac';
+	}
+	
+	if (glagoliticPattern.test(text)) {
+		return 'glagolitic';
+	}
+	
+	return 'latin';
 }

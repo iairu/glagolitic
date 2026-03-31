@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { latinToGlagolitic, glagoliticToLatin } from '$lib/converter.js';
+	import { latinToGlagolitic, glagoliticToLatin, latinToSyriac, syriacToLatin } from '$lib/converter.js';
 
 	let inputText = '';
 	let outputText = '';
@@ -9,6 +9,10 @@
 	let isConverting = false;
 	let charCount = 0;
 	let isLoading = true;
+	let fontSize = 18; // Base font size in pixels
+	const minFontSize = 12;
+	const maxFontSize = 32;
+	const fontSizeStep = 2;
 
 	// Dark mode detection for macOS
 	onMount(() => {
@@ -42,6 +46,41 @@
 
 		return () => clearTimeout(timer);
 	});
+
+	// Zoom functions for accessibility
+	function zoomIn() {
+		if (fontSize < maxFontSize) {
+			fontSize += fontSizeStep;
+		}
+	}
+
+	function zoomOut() {
+		if (fontSize > minFontSize) {
+			fontSize -= fontSizeStep;
+		}
+	}
+
+	function resetZoom() {
+		fontSize = 18;
+	}
+
+	// Update CSS variable for font size
+	$: {
+		document.documentElement.style.setProperty('--text-font-size', `${fontSize}px`);
+	}
+
+	// Update text direction based on selected language
+	$: {
+		const inputTextarea = document.getElementById('input');
+		const outputTextarea = document.getElementById('output');
+		
+		if (inputTextarea) {
+			inputTextarea.setAttribute('dir', inputLang === 'syriac' ? 'rtl' : 'ltr');
+		}
+		if (outputTextarea) {
+			outputTextarea.setAttribute('dir', outputLang === 'syriac' ? 'rtl' : 'ltr');
+		}
+	}
 
 	// Swap languages
 	function swapLanguages() {
@@ -77,14 +116,18 @@
 	// Convert text based on selected languages
 	function convertText() {
 		isConverting = true;
-		
+
 		setTimeout(() => {
 			if (inputLang === 'latin' && outputLang === 'glagolitic') {
 				outputText = latinToGlagolitic(inputText);
 			} else if (inputLang === 'glagolitic' && outputLang === 'latin') {
 				outputText = glagoliticToLatin(inputText);
+			} else if (inputLang === 'latin' && outputLang === 'syriac') {
+				outputText = latinToSyriac(inputText);
+			} else if (inputLang === 'syriac' && outputLang === 'latin') {
+				outputText = syriacToLatin(inputText);
 			}
-			
+
 			isConverting = false;
 			updateCharCount();
 		}, 50);
@@ -102,23 +145,41 @@
 			event.preventDefault();
 			convertText();
 		}
-		
+
 		// Cmd/Ctrl + Shift + X: Swap
 		if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key === 'X') {
 			event.preventDefault();
 			swapLanguages();
 		}
-		
+
 		// Cmd/Ctrl + Backspace: Clear
 		if ((event.metaKey || event.ctrlKey) && event.key === 'Backspace') {
 			event.preventDefault();
 			clearAll();
 		}
-		
+
 		// Cmd/Ctrl + C: Copy output (when output is focused)
 		if ((event.metaKey || event.ctrlKey) && event.key === 'c' && document.activeElement?.id === 'output') {
 			event.preventDefault();
 			copyOutput();
+		}
+
+		// Cmd/Ctrl + = / + : Zoom in (increase font size)
+		if ((event.metaKey || event.ctrlKey) && (event.key === '=' || event.key === '+')) {
+			event.preventDefault();
+			zoomIn();
+		}
+
+		// Cmd/Ctrl + - : Zoom out (decrease font size)
+		if ((event.metaKey || event.ctrlKey) && event.key === '-') {
+			event.preventDefault();
+			zoomOut();
+		}
+
+		// Cmd/Ctrl + 0 : Reset zoom
+		if ((event.metaKey || event.ctrlKey) && event.key === '0') {
+			event.preventDefault();
+			resetZoom();
 		}
 	}
 
@@ -148,6 +209,30 @@
 				<span class="latin-title">Glagolitic Converter</span>
 			</h1>
 			<div class="header-actions">
+				<button class="icon-btn" onclick={zoomOut} title="Zoom Out (⌘-)">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<circle cx="11" cy="11" r="8"/>
+						<path d="M21 21L16.65 16.65"/>
+						<path d="M8 11H14"/>
+					</svg>
+				</button>
+				<button class="icon-btn" onclick={resetZoom} title="Reset Zoom (⌘0)">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<circle cx="11" cy="11" r="8"/>
+						<path d="M21 21L16.65 16.65"/>
+						<path d="M11 8V14"/>
+						<path d="M8 11H14"/>
+					</svg>
+				</button>
+				<button class="icon-btn" onclick={zoomIn} title="Zoom In (⌘+)">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<circle cx="11" cy="11" r="8"/>
+						<path d="M21 21L16.65 16.65"/>
+						<path d="M11 8V14"/>
+						<path d="M8 11H14"/>
+					</svg>
+				</button>
+				<div class="separator"></div>
 				<button class="icon-btn" onclick={swapLanguages} title="Swap (⌘⇧X)">
 					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16"/>
@@ -170,6 +255,7 @@
 				<select bind:value={inputLang} class="lang-select">
 					<option value="latin">Latin</option>
 					<option value="glagolitic">Glagolitic (ⰃⰎⰀⰃⰑⰎⰋⰕⰋⰜⰀ)</option>
+					<option value="syriac">Syriac (ܠܫܢܐ ܣܘܪܝܝܐ)</option>
 				</select>
 				<span class="char-count">{charCount} chars</span>
 			</div>
@@ -188,6 +274,7 @@
 			<div class="panel-header">
 				<select bind:value={outputLang} class="lang-select">
 					<option value="glagolitic">Glagolitic (ⰃⰎⰀⰃⰑⰎⰋⰕⰋⰜⰀ)</option>
+					<option value="syriac">Syriac (ܠܫܢܐ ܣܘܪܝܝܐ)</option>
 					<option value="latin">Latin</option>
 				</select>
 				<button class="copy-btn" onclick={copyOutput} title="Copy (⌘C)">
@@ -214,6 +301,10 @@
 			<span class="shortcut"><kbd>⌘⇧X</kbd> Swap</span>
 			<span class="shortcut"><kbd>⌘⌫</kbd> Clear</span>
 			<span class="shortcut"><kbd>⌘C</kbd> Copy</span>
+			<span class="separator-dot"></span>
+			<span class="shortcut"><kbd>⌘+</kbd> Zoom In</span>
+			<span class="shortcut"><kbd>⌘-</kbd> Zoom Out</span>
+			<span class="shortcut"><kbd>⌘0</kbd> Reset</span>
 		</div>
 	</footer>
 </div>
@@ -326,6 +417,18 @@
 	.header-actions {
 		display: flex;
 		gap: 8px;
+		align-items: center;
+	}
+
+	.separator {
+		width: 1px;
+		height: 24px;
+		background: rgba(0, 0, 0, 0.15);
+		margin: 0 4px;
+	}
+
+	:global(body.dark-mode) .separator {
+		background: rgba(255, 255, 255, 0.15);
 	}
 
 	.icon-btn {
@@ -479,11 +582,16 @@
 		border: none;
 		padding: 20px;
 		color: #000000;
-		font-size: 18px;
+		font-size: var(--text-font-size, 18px);
 		line-height: 1.6;
 		resize: none;
 		outline: none;
 		font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+		direction: ltr;
+	}
+
+	:global(textarea[dir="rtl"]) {
+		direction: rtl;
 	}
 
 	textarea::placeholder {
@@ -517,6 +625,18 @@
 		display: flex;
 		gap: 20px;
 		justify-content: center;
+		align-items: center;
+	}
+
+	.separator-dot {
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: rgba(0, 0, 0, 0.3);
+	}
+
+	:global(body.dark-mode) .separator-dot {
+		background: rgba(255, 255, 255, 0.3);
 	}
 
 	.shortcut {
