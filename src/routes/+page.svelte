@@ -64,13 +64,12 @@
 		fontSize = 18;
 	}
 
-	// Update CSS variable for font size
-	$: {
+	// Update CSS variable for font size and text direction
+	onMount(() => {
+		// Set initial font size
 		document.documentElement.style.setProperty('--text-font-size', `${fontSize}px`);
-	}
-
-	// Update text direction based on selected language
-	$: {
+		
+		// Set initial text direction
 		const inputTextarea = document.getElementById('input');
 		const outputTextarea = document.getElementById('output');
 		
@@ -79,6 +78,28 @@
 		}
 		if (outputTextarea) {
 			outputTextarea.setAttribute('dir', outputLang === 'syriac' ? 'rtl' : 'ltr');
+		}
+	});
+
+	// Update CSS variable when font size changes
+	$: {
+		if (typeof document !== 'undefined') {
+			document.documentElement.style.setProperty('--text-font-size', `${fontSize}px`);
+		}
+	}
+
+	// Update text direction when language changes
+	$: {
+		if (typeof document !== 'undefined') {
+			const inputTextarea = document.getElementById('input');
+			const outputTextarea = document.getElementById('output');
+			
+			if (inputTextarea) {
+				inputTextarea.setAttribute('dir', inputLang === 'syriac' ? 'rtl' : 'ltr');
+			}
+			if (outputTextarea) {
+				outputTextarea.setAttribute('dir', outputLang === 'syriac' ? 'rtl' : 'ltr');
+			}
 		}
 	}
 
